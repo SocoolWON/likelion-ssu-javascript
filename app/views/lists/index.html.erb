@@ -1,0 +1,40 @@
+<div class="container">
+  <h1> 투두리스트~~~~</h1>
+  <%= form_for(@list, remote: true) do |f| %>
+    <%=f.text_field :content, class:"form-control"%>
+    <input type="button" value="완료" class="submit">
+  <% end %>
+</div>
+
+<div class="container here">
+  <% @lists.reverse.each do |list|%>
+    <div class="well">
+        <%= list.content %>
+    </div>
+  <% end %>
+</div>
+
+
+<script>
+  $(document).ready(function(){
+    $('.submit').click(function(){
+      var content = $('.form-control').val();
+
+      $.ajax({
+        method: "POST",
+        url: "<%=lists_path%>",
+        dataType: "json",
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'), // Optional
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify({ content: content }),
+      })
+        .done(function( msg ) {
+          $('<div class="well">'+content+'</div>').prependTo('.here');
+          $('.form-control').val('');
+        });
+
+    });
+  });
+</script>
